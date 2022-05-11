@@ -15,10 +15,10 @@ class PurchasingController {
       //const bookEndingDate = new Date(bookInfo.endingDate);
       //const currentDate = new Date();
       //if (currentDate > bookEndingDate) return res.status(400).json({ message: "Time is over" });
-
+      const count = req.body.count ? req.body.count : 1;
       const existingUser = await User.findOne({ username });
       if (!existingUser) return res.status(404).json({ message: "User does not exist" });
-      const newBalance = existingUser.balance - bookInfo.fee;
+      const newBalance = existingUser.balance - bookInfo.fee * count;
       if (newBalance < 0) return res.status(404).json({ message: "User does not have enough money" });
       const updatedUser = await User.findOneAndUpdate({ username }, { balance: newBalance }, { new: true });
 
@@ -27,6 +27,7 @@ class PurchasingController {
       const newEnrollment = await Purchasing.create({
         book,
         username,
+        count,
       });
 
       res.status(200).json({
@@ -38,29 +39,29 @@ class PurchasingController {
     }
   }
 
-  //   // [GET] /api/Purchasing/my-enrollment
-  //   async getMyEnrollment(req, res, next) {
-  //     const { username } = req.query;
+  // [GET] /api/purchasing/my-purchase
+  async getMyPurchase(req, res, next) {
+    const { username } = req.query;
 
-  //     try {
-  //       const books = await Purchasing.find({ username });
-  //       if (!books) return res.status(500).json({ message: "User have no enrollment" });
+    try {
+      const books = await Purchasing.find({ username });
+      if (!books) return res.status(500).json({ message: "User have no purchase" });
 
-  //       const result = await Promise.all(
-  //         books.map(async (book) => {
-  //           const temp = await book.findOne({ slug: book.book });
-  //           return temp;
-  //         })
-  //       );
+      const result = await Promise.all(
+        books.map(async (tmpObject) => {
+          var temp = await Book.findOne({ slug: tmpObject.book });
+          return { bookInfo: temp, count: tmpObject.count };
+        })
+      );
 
-  //       res.status(200).json({
-  //         message: "Find successfully",
-  //         content: result,
-  //       });
-  //     } catch (err) {
-  //       res.status(500).json({ message: "Server error" });
-  //     }
-  //   }
+      res.status(200).json({
+        message: "Find successfully",
+        content: result,
+      });
+    } catch (err) {
+      res.status(500).json({ message: "Server error" });
+    }
+  }
 
   //   // [PUT] /api/Purchasing/get-credit
   //   async getCredit(req, res, next) {

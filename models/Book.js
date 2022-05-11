@@ -25,6 +25,13 @@ const BookSchema = new Schema(
       type: String,
       default: "#",
     },
+    rating: [
+      {
+        username: String,
+        star: Number,
+        _id: false,
+      },
+    ],
   },
   { versionKey: false }
 );

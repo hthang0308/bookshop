@@ -7,9 +7,12 @@ const PurchasingSchema = new Schema(
       type: String,
       require: true,
     },
-
     username: {
       type: String,
+      require: true,
+    },
+    count: {
+      type: Number,
       require: true,
     },
   },
