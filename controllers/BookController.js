@@ -179,10 +179,10 @@ class BooksController {
 
   // [GET] /api/book/detail
   async getBookDetail(req, res, next) {
-    // const { book } = req.query;
+    const { book } = req.query;
     // console.log(book);
     try {
-      const existingBook = await Book.findOne(req.query);
+      const existingBook = await Book.findOne({ slug: book });
       if (!existingBook) return res.status(400).json({ message: "Book does not exist" });
 
       return res.status(200).json({
