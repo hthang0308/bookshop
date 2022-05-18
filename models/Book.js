@@ -13,7 +13,7 @@ const BookSchema = new Schema(
       require: true,
       unique: true,
     },
-    fee: {
+    price: {
       type: Number,
       require: true,
     },

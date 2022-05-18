@@ -3,20 +3,18 @@ const Schema = mongoose.Schema;
 
 const PurchasingSchema = new Schema(
   {
-    book: {
-      type: String,
-      require: true,
-    },
     username: {
       type: String,
       require: true,
     },
-    count: {
-      type: Number,
-      require: true,
-    },
+    items: [
+      {
+        book: String,
+        quantity: Number,
+        _id: false,
+      },
+    ],
   },
   { versionKey: false }
 );
-
 module.exports = mongoose.model("purchasings", PurchasingSchema);

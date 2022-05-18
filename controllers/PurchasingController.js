@@ -7,34 +7,38 @@ const User = require("../models/User");
 class PurchasingController {
   // [POST] /api/purchasing/purchase
   async purchase(req, res, next) {
-    const { book, username } = req.body;
     try {
-      const bookInfo = await Book.findOne({ slug: book });
-      if (!bookInfo) return res.status(400).json({ message: "Book does not exist" });
+      const {username, items } = req.body;
       console.log(username);
-      //const bookEndingDate = new Date(bookInfo.endingDate);
-      //const currentDate = new Date();
-      //if (currentDate > bookEndingDate) return res.status(400).json({ message: "Time is over" });
-      const count = req.body.count ? req.body.count : 1;
+      console.log(items);
       const existingUser = await User.findOne({ username });
       if (!existingUser) return res.status(404).json({ message: "User does not exist" });
-      const newBalance = existingUser.balance - bookInfo.fee * count;
-      if (newBalance < 0) return res.status(404).json({ message: "User does not have enough money" });
-      const updatedUser = await User.findOneAndUpdate({ username }, { balance: newBalance }, { new: true });
-
-      //const temp = await Purchasing.findOne({ book, username });
-      //if (temp) return res.status(400).json({ message: "User have already this book" });
-      const newEnrollment = await Purchasing.create({
-        book,
+      var totalprice=0;
+      for (const item of items)
+      {
+        console.log(1);
+        const book = await Book.findOne({ slug: item.book });
+        if (!book) return res.status(500).json({ message: "Book not found" });
+        console.log(1);
+        totalprice+=book.price*item.quantity;
+      }
+      const newBalance=existingUser.balance-totalprice;
+      if(newBalance<0) return res.status(500).json({ message: "Not enough balance" });
+      await User.findOneAndUpdate(
+          { username },
+          { balance: newBalance },
+          { new: true }
+      );
+      const newPurchasing = await Purchasing.create({
         username,
-        count,
+        items,
       });
-
       res.status(200).json({
-        message: "Buy successfully",
-        content: newEnrollment._doc,
-      });
+        message: 'Buy books successfully',
+        content: newPurchasing._doc
+    });
     } catch (err) {
+      console.log(err);
       res.status(500).json({ message: "Server error" });
     }
   }
