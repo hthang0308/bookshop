@@ -8,35 +8,36 @@ class PurchasingController {
   // [POST] /api/purchasing/purchase
   async purchase(req, res, next) {
     try {
-      const {username, items } = req.body;
+      const { username, items } = req.body;
       console.log(username);
       console.log(items);
       const existingUser = await User.findOne({ username });
-      if (!existingUser) return res.status(404).json({ message: "User does not exist" });
-      var totalprice=0;
-      for (const item of items)
-      {
+      if (!existingUser)
+        return res.status(404).json({ message: "User does not exist" });
+      var totalprice = 0;
+      for (const item of items) {
         console.log(1);
         const book = await Book.findOne({ slug: item.book });
         if (!book) return res.status(500).json({ message: "Book not found" });
         console.log(1);
-        totalprice+=book.price*item.quantity;
+        totalprice += book.price * item.quantity;
       }
-      const newBalance=existingUser.balance-totalprice;
-      if(newBalance<0) return res.status(500).json({ message: "Not enough balance" });
+      const newBalance = existingUser.balance - totalprice;
+      if (newBalance < 0)
+        return res.status(500).json({ message: "Not enough balance" });
       await User.findOneAndUpdate(
-          { username },
-          { balance: newBalance },
-          { new: true }
+        { username },
+        { balance: newBalance },
+        { new: true }
       );
       const newPurchasing = await Purchasing.create({
         username,
         items,
       });
       res.status(200).json({
-        message: 'Buy books successfully',
-        content: newPurchasing._doc
-    });
+        message: "Buy books successfully",
+        content: newPurchasing._doc,
+      });
     } catch (err) {
       console.log(err);
       res.status(500).json({ message: "Server error" });
@@ -48,19 +49,17 @@ class PurchasingController {
     const { username } = req.query;
 
     try {
-      const books = await Purchasing.find({ username });
-      if (!books) return res.status(500).json({ message: "User have no purchase" });
-
-      const result = await Promise.all(
-        books.map(async (tmpObject) => {
-          var temp = await Book.findOne({ slug: tmpObject.book });
-          return { bookInfo: temp, count: tmpObject.count };
-        })
-      );
+      const allpurchases = await Purchasing.find({ username });
+      if (!allpurchases)
+        return res.status(500).json({ message: "User have no purchase" });
+      var all_item_lists = [];
+      for (const purchase of allpurchases) {
+        all_item_lists.push(purchase.items);
+      }
 
       res.status(200).json({
         message: "Find successfully",
-        content: result,
+        content: all_item_lists,
       });
     } catch (err) {
       res.status(500).json({ message: "Server error" });

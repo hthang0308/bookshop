@@ -50,7 +50,10 @@ class BooksController {
         const slug = await Book.find({ slug: queryRegex });
 
         result = bookName.concat(description, slug);
-        result = result.filter((thing, index, self) => index === self.findIndex((t) => t.slug == thing.slug));
+        result = result.filter(
+          (thing, index, self) =>
+            index === self.findIndex((t) => t.slug == thing.slug)
+        );
       } else result = await Book.find({});
       if (!page) page = 1;
       if (!perPage) perPage = result.length;
@@ -78,7 +81,10 @@ class BooksController {
             totalPages: totalPages,
             totalItems: result.length,
             perPage: perPage,
-            items: result.slice((page - 1) * perPage, (page - 1) * perPage + perPage),
+            items: result.slice(
+              (page - 1) * perPage,
+              (page - 1) * perPage + perPage
+            ),
           },
         });
     } catch (err) {
@@ -106,11 +112,15 @@ class BooksController {
   // [POST] /api/book/create
   async create(req, res, next) {
     const isValid = await checkConstraints(req.body);
-    if (!isValid) return res.status(400).json({ message: "Given Book's information is invalid" });
+    if (!isValid)
+      return res
+        .status(400)
+        .json({ message: "Given Book's information is invalid" });
     const { slug } = req.body;
     try {
       const existingBook = await Book.find({ slug });
-      if (existingBook.length > 0) return res.status(400).json({ message: "Book already exists" });
+      if (existingBook.length > 0)
+        return res.status(400).json({ message: "Book already exists" });
       const newBook = await Book.create(req.body);
       res.status(200).json({
         message: "Create a new Book successfully",
@@ -122,39 +132,58 @@ class BooksController {
   }
 
   // [PUT] /api/book/rate
-  // async rate(req, res, next) {
-  //   const isValid = await checkConstraints(req.body);
-  //   if (!isValid) return res.status(400).json({ message: "Given Book's information is invalid" });
+  async rate(req, res, next) {
+    const isValid = await checkConstraints(req.body);
+    if (!isValid)
+      return res
+        .status(400)
+        .json({ message: "Given book's information is invalid" });
 
-  //   const { Book, rating } = req.body;
+    const { book, rating } = req.body;
 
-  //   try {
-  //     let existingBook = await Book.findOne({ slug: Book });
-  //     if (!existingBook) return res.status(400).json({ message: "Book does not exist" });
+    try {
+      let existingBook = await Book.findOne({ slug: book });
+      if (!existingBook)
+        return res.status(400).json({ message: "Book does not exist" });
 
-  //     const foundIndex = existingBook.rating.findIndex((item) => item.username == rating.username);
-  //     if (foundIndex != -1) existingBook.rating[foundIndex].star = rating.star;
-  //     else existingBook.rating.push(rating);
+      const foundIndex = existingBook.rating.findIndex(
+        (item) => item.username == rating.username
+      );
+      if (foundIndex != -1) existingBook.rating[foundIndex].star = rating.star;
+      else existingBook.rating.push(rating);
 
-  //     const updatedBook = await Book.findOneAndUpdate({ slug: Book }, { rating: existingBook.rating }, { new: true });
+      const updatedCourse = await Book.findOneAndUpdate(
+        { slug: book },
+        { rating: existingBook.rating },
+        { new: true }
+      );
 
-  //     res.status(200).json({
-  //       message: "Rate successfully",
-  //       content: updatedBook._doc,
-  //     });
-  //   } catch (err) {
-  //     res.status(500).json({ message: "Server error" });
-  //   }
-  // }
+      res.status(200).json({
+        message: "Rate successfully",
+        content: updatedCourse._doc,
+      });
+    } catch (err) {
+      console.log(err);
+      res.status(500).json({ message: "Server error" });
+    }
+  }
 
   // [PUT] /api/book/update
   async update(req, res, next) {
     const isValid = await checkConstraints(req.body);
-    if (!isValid) return res.status(400).json({ message: "Given Book's information is invalid" });
+    if (!isValid)
+      return res
+        .status(400)
+        .json({ message: "Given Book's information is invalid" });
     const { slug } = req.body;
     try {
-      const updatedBook = await Book.findOneAndUpdate({ slug: slug }, req.body, { new: true });
-      if (!updatedBook) return res.status(400).json({ message: "Book does not exist" });
+      const updatedBook = await Book.findOneAndUpdate(
+        { slug: slug },
+        req.body,
+        { new: true }
+      );
+      if (!updatedBook)
+        return res.status(400).json({ message: "Book does not exist" });
       res.status(200).json({
         message: "Change Book's info successfully",
         content: updatedBook._doc,
@@ -169,7 +198,8 @@ class BooksController {
     const { slug } = req.body;
     try {
       const temp = await Book.deleteOne({ slug });
-      if (!temp.deletedCount) return res.status(400).json({ message: "Book does not exist" });
+      if (!temp.deletedCount)
+        return res.status(400).json({ message: "Book does not exist" });
 
       res.status(200).json({ message: "Delete successfully" });
     } catch (err) {
@@ -183,7 +213,8 @@ class BooksController {
     // console.log(book);
     try {
       const existingBook = await Book.findOne({ slug: book });
-      if (!existingBook) return res.status(400).json({ message: "Book does not exist" });
+      if (!existingBook)
+        return res.status(400).json({ message: "Book does not exist" });
 
       return res.status(200).json({
         message: "Get Book detail successfully",

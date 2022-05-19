@@ -10,7 +10,6 @@ const UserSchema = new Schema(
     },
     fullname: {
       type: String,
-      unique: true,
     },
     phone: {
       type: String,
@@ -27,7 +26,7 @@ const UserSchema = new Schema(
 
     isAdmin: {
       type: Boolean,
-      default: "",
+      default: false,
     },
 
     balance: {

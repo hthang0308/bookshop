@@ -43,12 +43,20 @@ class UsersController {
 
     try {
       const existingUser = await User.findOne({ username });
-      if (!existingUser) return res.status(404).json({ message: "User does not exist" });
+      if (!existingUser)
+        return res.status(404).json({ message: "User does not exist" });
 
-      const isCorrectPassword = await bcrypt.compare(password, existingUser.password);
-      if (!isCorrectPassword) return res.status(400).json({ message: "Invalid password" });
+      const isCorrectPassword = await bcrypt.compare(
+        password,
+        existingUser.password
+      );
+      if (!isCorrectPassword)
+        return res.status(400).json({ message: "Invalid password" });
 
-      const accessToken = jwt.sign(existingUser.username, process.env.ACCESS_TOKEN_SECRET);
+      const accessToken = jwt.sign(
+        existingUser.username,
+        process.env.ACCESS_TOKEN_SECRET
+      );
       res.status(200).json({
         message: "Login successfully",
         content: {
@@ -64,19 +72,37 @@ class UsersController {
   // [POST] /api/user/signup
   async signup(req, res, next) {
     console.log(req.body);
-    if (!checkConstraints(req.body)) return res.status(400).json({ message: "Given user's information is invalid" });
-
+    if (!checkConstraints(req.body))
+      return res
+        .status(400)
+        .json({ message: "Given user's information is invalid" });
+    console.log(0);
     const { username, password } = req.body;
-
+    console.log(1);
     try {
       const existingUser = await User.findOne({ username });
-      if (existingUser) return res.status(400).json({ message: "User already exists" });
-
+      if (existingUser)
+        return res.status(400).json({ message: "User already exists" });
+      console.log(2);
       const hashedPassword = await bcrypt.hash(password, 10);
-
-      const result = await User.create({ ...req.body, password: hashedPassword });
-
-      const accessToken = jwt.sign(result.username, process.env.ACCESS_TOKEN_SECRET);
+      delete req.body.password;
+      console.log({
+        ...req.body,
+        password: hashedPassword,
+        balance: 0,
+        isAdmin: false,
+      });
+      const result = await User.create({
+        ...req.body,
+        password: hashedPassword,
+        balance: 0,
+        isAdmin: false,
+      });
+      console.log(4);
+      const accessToken = jwt.sign(
+        result.username,
+        process.env.ACCESS_TOKEN_SECRET
+      );
       res.status(200).json({
         message: "Signup successfully",
         content: {
@@ -85,23 +111,35 @@ class UsersController {
         },
       });
     } catch (err) {
+      console.log(err);
       res.status(500).json({ message: "Server error" });
     }
   }
 
   // [PUT] /api/user/change-info
   async changeInfo(req, res, next) {
-    if (!checkConstraints(req.body)) return res.status(400).json({ message: "Given user's information is invalid" });
+    if (!checkConstraints(req.body))
+      return res
+        .status(400)
+        .json({ message: "Given user's information is invalid" });
 
     const { username } = req.body;
     delete req.body["password"];
 
     try {
-      const updatedUser = await User.findOneAndUpdate({ username: username }, req.body, { new: true });
+      const updatedUser = await User.findOneAndUpdate(
+        { username: username },
+        req.body,
+        { new: true }
+      );
 
-      if (!updatedUser) return res.status(400).json({ message: "User dose not exist" });
+      if (!updatedUser)
+        return res.status(400).json({ message: "User dose not exist" });
 
-      const accessToken = jwt.sign(updatedUser.username, process.env.ACCESS_TOKEN_SECRET);
+      const accessToken = jwt.sign(
+        updatedUser.username,
+        process.env.ACCESS_TOKEN_SECRET
+      );
 
       res.status(200).json({
         message: "Change info successfully",
@@ -121,18 +159,30 @@ class UsersController {
 
     try {
       const existingUser = await User.findOne({ username });
-      if (!existingUser) return res.status(400).json({ message: "User doest not exist" });
-      let isCorrectPassword = await bcrypt.compare(currentPassword, existingUser.password);
-      if (!isCorrectPassword) return res.status(400).json({ message: "Wrong password" });
+      if (!existingUser)
+        return res.status(400).json({ message: "User doest not exist" });
+      let isCorrectPassword = await bcrypt.compare(
+        currentPassword,
+        existingUser.password
+      );
+      if (!isCorrectPassword)
+        return res.status(400).json({ message: "Wrong password" });
 
       //isCorrectPassword = newPassword.length >= 6;
       //if (!isCorrectPassword) return res.status(400).json({ message: "New password must be at least 6 characters" });
 
       const hashedPassword = await bcrypt.hash(newPassword, 10);
 
-      const updatedUser = await User.findOneAndUpdate({ username: username }, { password: hashedPassword }, { new: true });
+      const updatedUser = await User.findOneAndUpdate(
+        { username: username },
+        { password: hashedPassword },
+        { new: true }
+      );
 
-      const accessToken = jwt.sign(updatedUser.username, process.env.ACCESS_TOKEN_SECRET);
+      const accessToken = jwt.sign(
+        updatedUser.username,
+        process.env.ACCESS_TOKEN_SECRET
+      );
 
       res.status(200).json({
         message: "Change password successfully",
@@ -175,14 +225,25 @@ class UsersController {
 
     try {
       const existingUser = await User.findOne({ username });
-      if (!existingUser) return res.status(404).json({ message: "User does not exist" });
+      if (!existingUser)
+        return res.status(404).json({ message: "User does not exist" });
 
-      if (amount < 0) return res.status(404).json({ message: "Amount must be a positive number" });
+      if (amount < 0)
+        return res
+          .status(404)
+          .json({ message: "Amount must be a positive number" });
 
       const newBalance = amount + existingUser.balance;
-      const updatedUser = await User.findOneAndUpdate({ username: username }, { balance: newBalance }, { new: true });
+      const updatedUser = await User.findOneAndUpdate(
+        { username: username },
+        { balance: newBalance },
+        { new: true }
+      );
 
-      const accessToken = jwt.sign(updatedUser.username, process.env.ACCESS_TOKEN_SECRET);
+      const accessToken = jwt.sign(
+        updatedUser.username,
+        process.env.ACCESS_TOKEN_SECRET
+      );
       res.status(200).json({
         message: "Top up successfully",
         content: {
