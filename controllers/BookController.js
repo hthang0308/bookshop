@@ -6,6 +6,7 @@ const jwt = require("jsonwebtoken");
 const rp = require("request-promise");
 
 const checkConstraints = async (Book) => {
+  if (Book.price <= 0) return false;
   return true;
 };
 

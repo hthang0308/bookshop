@@ -35,6 +35,7 @@ class PurchasingController {
       res.status(200).json({
         message: "Buy books successfully",
         content: newPurchasing._doc,
+        newBalance,
       });
     } catch (err) {
       console.log(err);

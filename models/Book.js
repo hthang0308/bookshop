@@ -36,6 +36,10 @@ const BookSchema = new Schema(
       type: String,
       default: "#",
     },
+    inStock: {
+      type: Boolean,
+      default: true,
+    },
     rating: [
       {
         username: String,
