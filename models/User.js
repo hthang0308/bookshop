@@ -8,7 +8,24 @@ const UserSchema = new Schema(
       require: true,
       unique: true,
     },
+    password: {
+      type: String,
+      require: true,
+    },
     fullname: {
+      type: String,
+    },
+    photoURL: {
+      type: String,
+    },
+    phone: {
+      type: String,
+      unique: true,
+    },
+    country: {
+      type: String,
+    },
+    address: {
       type: String,
     },
     phone: {
@@ -19,11 +36,15 @@ const UserSchema = new Schema(
       type: String,
       unique: true,
     },
-    password: {
+    city: {
       type: String,
-      require: true,
     },
-
+    about: {
+      type: String,
+    },
+    photoURL: {
+      type: String,
+    },
     isAdmin: {
       type: Boolean,
       default: false,

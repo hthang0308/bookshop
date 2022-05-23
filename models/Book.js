@@ -7,11 +7,22 @@ const BookSchema = new Schema(
       type: String,
       require: true,
     },
-
     slug: {
       type: String,
       require: true,
       unique: true,
+    },
+    categories: {
+      type: Array,
+      require: true,
+    },
+    authorName: {
+      type: String,
+      require: true,
+    },
+    publisherName: {
+      type: String,
+      require: true,
     },
     price: {
       type: Number,
@@ -29,6 +40,22 @@ const BookSchema = new Schema(
       {
         username: String,
         star: Number,
+        comment: {
+          type: String,
+          default: "No comment",
+        },
+        postedAt: {
+          type: Date,
+          default: Date.now,
+        },
+        helpful: {
+          type: Number,
+          default: 0,
+        },
+        isPurchased: {
+          type: Boolean,
+          default: false,
+        },
         _id: false,
       },
     ],

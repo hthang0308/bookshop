@@ -161,6 +161,8 @@ class UsersController {
       const existingUser = await User.findOne({ username });
       if (!existingUser)
         return res.status(400).json({ message: "User doest not exist" });
+      console.log(existingUser);
+      console.log(existingUser.password);
       let isCorrectPassword = await bcrypt.compare(
         currentPassword,
         existingUser.password
@@ -192,6 +194,7 @@ class UsersController {
         },
       });
     } catch (err) {
+      console.log(err);
       res.status(500).json({ message: "Server error" });
     }
   }

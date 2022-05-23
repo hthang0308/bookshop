@@ -9,18 +9,16 @@ class PurchasingController {
   async purchase(req, res, next) {
     try {
       const { username, items } = req.body;
-      console.log(username);
-      console.log(items);
       const existingUser = await User.findOne({ username });
       if (!existingUser)
         return res.status(404).json({ message: "User does not exist" });
       var totalprice = 0;
       for (const item of items) {
-        console.log(1);
-        const book = await Book.findOne({ slug: item.book });
-        if (!book) return res.status(500).json({ message: "Book not found" });
-        console.log(1);
-        totalprice += book.price * item.quantity;
+        // console.log(1);
+        // const book = await Book.findOne({ slug: item.book });
+        // if (!book) return res.status(500).json({ message: "Book not found" });
+        // console.log(1);
+        totalprice += item.book.price * item.quantity;
       }
       const newBalance = existingUser.balance - totalprice;
       if (newBalance < 0)
@@ -52,14 +50,9 @@ class PurchasingController {
       const allpurchases = await Purchasing.find({ username });
       if (!allpurchases)
         return res.status(500).json({ message: "User have no purchase" });
-      var all_item_lists = [];
-      for (const purchase of allpurchases) {
-        all_item_lists.push(purchase.items);
-      }
-
       res.status(200).json({
         message: "Find successfully",
-        content: all_item_lists,
+        content: allpurchases,
       });
     } catch (err) {
       res.status(500).json({ message: "Server error" });

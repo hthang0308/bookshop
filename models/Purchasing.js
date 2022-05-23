@@ -9,11 +9,15 @@ const PurchasingSchema = new Schema(
     },
     items: [
       {
-        book: String,
+        book: Object,
         quantity: Number,
         _id: false,
       },
     ],
+    date: {
+      type: Date,
+      default: Date.now,
+    },
   },
   { versionKey: false }
 );

@@ -6,34 +6,6 @@ const jwt = require("jsonwebtoken");
 const rp = require("request-promise");
 
 const checkConstraints = async (Book) => {
-  // if (Book.slug?.split(" ").length > 1) return false;
-  // if (Book.slug && Book.slug.length == 0) return false;
-
-  // if (Book.fee && Book.fee < 0) return false;
-
-  // if (Book.tutor)
-  //   try {
-  //     const temp = await User.findOne({
-  //       username: Book.tutor,
-  //       role: "tutor",
-  //     });
-  //     if (!temp) return false;
-  //   } catch (err) {}
-
-  // if (Book.rating)
-  //   try {
-  //     const temp = await User.findOne({ username: Book.rating.username });
-  //     if (!temp) return false;
-  //   } catch (err) {}
-
-  // if (Book.rating && (Book.rating.star < 0 || Book.rating.star > 5)) return false;
-
-  // if (Book.startingDate && Book.endingDate) {
-  //   const start = new Date(Book.startingDate);
-  //   const end = new Date(Book.endingDate);
-  //   if (start > end) return false;
-  // }
-
   return true;
 };
 
@@ -112,21 +84,25 @@ class BooksController {
   // [POST] /api/book/create
   async create(req, res, next) {
     const isValid = await checkConstraints(req.body);
+    //get latest item in mongodb
+    const latestBook = await Book.findOne({}).sort({ _id: -1 });
+    if (!latestBook) {
+      req.body.slug = "book-1";
+    } else {
+      req.body.slug = "book-" + (parseInt(latestBook.slug.split("-")[1]) + 1);
+    }
     if (!isValid)
       return res
         .status(400)
         .json({ message: "Given Book's information is invalid" });
-    const { slug } = req.body;
     try {
-      const existingBook = await Book.find({ slug });
-      if (existingBook.length > 0)
-        return res.status(400).json({ message: "Book already exists" });
       const newBook = await Book.create(req.body);
       res.status(200).json({
         message: "Create a new Book successfully",
         content: newBook._doc,
       });
     } catch (err) {
+      console.log(err);
       res.status(500).json({ message: "Server error" });
     }
   }
@@ -138,7 +114,6 @@ class BooksController {
       return res
         .status(400)
         .json({ message: "Given book's information is invalid" });
-
     const { book, rating } = req.body;
 
     try {
@@ -149,9 +124,13 @@ class BooksController {
       const foundIndex = existingBook.rating.findIndex(
         (item) => item.username == rating.username
       );
-      if (foundIndex != -1) existingBook.rating[foundIndex].star = rating.star;
-      else existingBook.rating.push(rating);
-
+      if (foundIndex != -1) {
+        existingBook.rating[foundIndex].star = rating.star;
+        existingBook.rating[foundIndex].comment = rating.comment;
+        existingBook.rating[foundIndex].isPurchased = rating.isPurchased;
+      } else existingBook.rating.push(rating);
+      console.log(rating);
+      console.log(existingBook.rating);
       const updatedCourse = await Book.findOneAndUpdate(
         { slug: book },
         { rating: existingBook.rating },
