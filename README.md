@@ -21,15 +21,15 @@ Phần mềm quản lý nhà sách online bao gồm các tính năng sau:
 - Admin - Quản lý, cập nhật sách
 
 ## Công cụ sử dụng
-Frontend: HTML, CSS, Javascript, ReactJS
-Backend: NodeJS
-Database: MongoDB
-IDE: Visual Studio Code
-OS: Windows 10
+- Frontend: HTML, CSS, Javascript, ReactJS
+- Backend: NodeJS
+- Database: MongoDB
+- IDE: Visual Studio Code
+- OS: Windows 10
 
 ## Mã nguồn
-Link github Frontend: https://github.com/hthang0308/onlinebookstore
-Link github Backend: https://github.com/hthang0308/onlinebookstore_server
+- Link github Frontend: https://github.com/hthang0308/onlinebookstore
+- Link github Backend: https://github.com/hthang0308/onlinebookstore_server
 
 ## Hướng dẫn cách build source
 1. Clone từ đường dẫn github ở phần mã nguồn về máy, cả phần Frontend và Backend
